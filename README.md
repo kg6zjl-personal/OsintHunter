@@ -38,6 +38,8 @@ y construye un **grafo de investigación** con puntuación de confianza, mapa, l
 
 ## ✨ Qué lo hace distinto
 
+${\color{#ff7a1a}\textsf{De\ un\ solo\ dato\ a\ un\ perfil\ completo,\ con\ pruebas\ de\ cada\ conexión.}}$
+
 | | |
 |---|---|
 | 🕸️ **Grafo vivo** | Cada hallazgo es un nodo; las relaciones se dibujan solas. Agrupa en burbujas por tipo, plataforma o **familia de alias**. |
@@ -54,20 +56,20 @@ y construye un **grafo de investigación** con puntuación de confianza, mapa, l
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/confidence.png" alt="Confianza"><br><b>${\color{#ff7a1a}\textsf{Confianza}}$</b> · por qué una cuenta es (o no) la persona</td>
-    <td width="50%"><img src="docs/screenshots/alias.png" alt="Alias"><br><b>${\color{#ff7a1a}\textsf{Familias\ de\ alias}}$</b> · raíz común y variantes probadas</td>
+    <td width="50%"><img src="docs/screenshots/confidence.png" alt="Confianza"><br><b>🎯 Confianza</b> · por qué una cuenta es (o no) la persona</td>
+    <td width="50%"><img src="docs/screenshots/alias.png" alt="Alias"><br><b>🧬 Familias de alias</b> · raíz común y variantes probadas</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/bubbles.png" alt="Burbujas"><br><b>${\color{#ff7a1a}\textsf{Burbujas}}$</b> · el grafo agrupado por familia de alias</td>
-    <td><img src="docs/screenshots/map.png" alt="Mapa"><br><b>${\color{#ff7a1a}\textsf{Mapa}}$</b> · ubicaciones geocodificadas</td>
+    <td><img src="docs/screenshots/bubbles.png" alt="Burbujas"><br><b>🫧 Burbujas</b> · el grafo agrupado por familia de alias</td>
+    <td><img src="docs/screenshots/map.png" alt="Mapa"><br><b>🗺️ Mapa</b> · ubicaciones geocodificadas</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/timeline.png" alt="Línea de tiempo"><br><b>${\color{#ff7a1a}\textsf{Línea\ de\ tiempo}}$</b> · la historia digital en orden</td>
-    <td><img src="docs/screenshots/list.png" alt="Lista"><br><b>${\color{#ff7a1a}\textsf{Lista}}$</b> · todas las entidades con filtros</td>
+    <td><img src="docs/screenshots/timeline.png" alt="Línea de tiempo"><br><b>🕒 Línea de tiempo</b> · la historia digital en orden</td>
+    <td><img src="docs/screenshots/list.png" alt="Lista"><br><b>📋 Lista</b> · todas las entidades con filtros</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/report.png" alt="Informe"><br><b>${\color{#ff7a1a}\textsf{Informe}}$</b> · exportable a HTML/PDF</td>
-    <td><img src="docs/screenshots/english.png" alt="English UI"><br><b>${\color{#ff7a1a}\textsf{English\ UI}}$</b> · interfaz bilingüe ES / EN</td>
+    <td><img src="docs/screenshots/report.png" alt="Informe"><br><b>📄 Informe</b> · exportable a HTML/PDF</td>
+    <td><img src="docs/screenshots/english.png" alt="English UI"><br><b>🌐 English UI</b> · interfaz bilingüe ES / EN</td>
   </tr>
 </table>
 
@@ -107,7 +109,7 @@ build_exe.bat        # deja el resultado en dist\OsintHunter.exe
 ## 🧩 Módulos
 
 <details open>
-<summary><b>${\color{#ff7a1a}\textsf{49\ módulos}}$</b> organizados por tipo de dato</summary>
+<summary><b>49 módulos</b> organizados por tipo de dato</summary>
 
 <br>
 
