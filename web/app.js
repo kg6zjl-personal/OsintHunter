@@ -1622,7 +1622,7 @@ function buildReport() {
 
   const accRows = accounts.map((a) => {
     const at = a.attrs || {};
-    const verdict = at._verdict === "confirmada" ? `<span class="ok">✔ Confirmada</span>` : at["Nivel de confianza"] ? `${esc(at["Nivel de confianza"])} (${esc(at.Confianza ?? "?")})` : "—";
+    const verdict = at._verdict === "confirmada" ? `<span class="ok">✔ Confirmada</span>` : at["Nivel de confianza"] ? `${esc(I18N.tr(at["Nivel de confianza"]))} (${esc(at.Confianza ?? "?")})` : "—";
     const url = safeUrl(a.value);
     return `<tr><td>${esc(at.Plataforma || "")}</td><td>${esc(at.Usuario || "")}</td>
       <td>${url ? `<a href="${esc(url)}">${esc(short(url, 60))}</a>` : esc(short(a.label, 60))}</td><td>${verdict}</td>
@@ -1669,12 +1669,12 @@ function buildReport() {
 <div class="toolbar"><span>Revisa el informe y guárdalo como PDF desde el diálogo de impresión.</span><button onclick="window.print()">Guardar como PDF / Imprimir</button></div>
 <div class="page">
 <header><div><div class="brand">OSINT HUNTER · INFORME</div><h1>${esc(kase?.name || "Caso")}</h1>
-  <div class="muted">Investigado: ${roots.map((r) => `<b>${esc(r.label)}</b> (${esc(typeInfo(r.type).label)})`).join(", ") || "—"}</div></div>
+  <div class="muted">Investigado: ${roots.map((r) => `<b>${esc(r.label)}</b> (${esc(I18N.tr(typeInfo(r.type).label))})`).join(", ") || "—"}</div></div>
   <div class="muted small" style="text-align:right">${esc(now.toLocaleDateString(I18N.locale, { dateStyle: "long" }))}<br>${esc(now.toLocaleTimeString(I18N.locale, { timeStyle: "short" }))}<br>${ents.length} entidades</div></header>
 
 <h2>Resumen</h2>
 ${keyFacts.length ? `<ul class="facts">${keyFacts.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>` : `<p class="muted">Sin hallazgos todavía.</p>`}
-<p class="muted small">${counts.map(([l, n]) => `${esc(l)}: ${n}`).join(" · ")}</p>
+<p class="muted small">${counts.map(([l, n]) => `${esc(I18N.tr(l))}: ${n}`).join(" · ")}</p>
 ${ai.length ? `<h2>Resumen de la IA</h2>${ai.map((x) => `<div class="ai">${esc(x)}</div>`).join("")}` : ""}
 ${notes ? `<h2>Notas del analista</h2><div class="notes">${esc(notes)}</div>` : ""}
 

@@ -2,97 +2,98 @@
 
 <img src="docs/banner.svg" alt="OsintHunter" width="100%">
 
+**🇬🇧 English** · [🇪🇸 Español](README.es.md)
+
 <br>
 
 [![Release](https://img.shields.io/github/v/release/letox4/OsintHunter?style=for-the-badge&color=ff7a1a&labelColor=0d0a07&logo=github)](https://github.com/letox4/OsintHunter/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/letox4/OsintHunter/total?style=for-the-badge&color=ff7a1a&labelColor=0d0a07&logo=windows)](https://github.com/letox4/OsintHunter/releases)
 [![Python](https://img.shields.io/badge/Python-3.11+-ff7a1a?style=for-the-badge&labelColor=0d0a07&logo=python&logoColor=ffb066)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-backend-ff7a1a?style=for-the-badge&labelColor=0d0a07&logo=fastapi&logoColor=ffb066)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/licencia-MIT-ff7a1a?style=for-the-badge&labelColor=0d0a07)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-ff7a1a?style=for-the-badge&labelColor=0d0a07)](LICENSE)
 
-[![Módulos](https://img.shields.io/badge/m%C3%B3dulos-49-ffb066?style=flat-square&labelColor=1c1209)](#-módulos)
-[![Sitios](https://img.shields.io/badge/sitios_por_usuario-400+-ffb066?style=flat-square&labelColor=1c1209)](#-módulos)
-[![Sin claves](https://img.shields.io/badge/funciona_sin_API_keys-s%C3%AD-ffb066?style=flat-square&labelColor=1c1209)](#-claves-de-api-opcionales)
-[![Idiomas](https://img.shields.io/badge/UI-ES%20%7C%20EN-ffb066?style=flat-square&labelColor=1c1209)](#)
-[![Local](https://img.shields.io/badge/100%25-local-ffb066?style=flat-square&labelColor=1c1209)](#-privacidad)
+[![Modules](https://img.shields.io/badge/modules-49-ffb066?style=flat-square&labelColor=1c1209)](#-modules)
+[![Sites](https://img.shields.io/badge/username_sites-400+-ffb066?style=flat-square&labelColor=1c1209)](#-modules)
+[![No keys](https://img.shields.io/badge/works_without_API_keys-yes-ffb066?style=flat-square&labelColor=1c1209)](#-optional-api-keys)
+[![Languages](https://img.shields.io/badge/UI-EN%20%7C%20ES-ffb066?style=flat-square&labelColor=1c1209)](#)
+[![Local](https://img.shields.io/badge/100%25-local-ffb066?style=flat-square&labelColor=1c1209)](#-privacy)
 
-### ${\color{#ff7a1a}\textsf{Encuentra.\ Conecta.\ Confirma.}}$
+### ${\color{#ff7a1a}\textsf{Find.\ Connect.\ Confirm.}}$
 
-**Plataforma OSINT de escritorio** que parte de un usuario, email, teléfono, nombre, dominio, IP o RUT<br>
-y construye un **grafo de investigación** con puntuación de confianza, mapa, línea de tiempo e informe.
+**Desktop OSINT platform** that starts from a username, email, phone, name, domain, IP or Chilean RUT<br>
+and builds an **investigation graph** with confidence scoring, a map, a timeline and a report.
 
-[**⬇️ Descargar .exe**](https://github.com/letox4/OsintHunter/releases/latest) ·
-[**🚀 Inicio rápido**](#-inicio-rápido) ·
-[**🧩 Módulos**](#-módulos) ·
-[**📸 Capturas**](#-capturas) ·
-[**🇬🇧 English**](#-english)
+[**⬇️ Download .exe**](https://github.com/letox4/OsintHunter/releases/latest) ·
+[**🚀 Quick start**](#-quick-start) ·
+[**🧩 Modules**](#-modules) ·
+[**📸 Screenshots**](#-screenshots)
 
 </div>
 
 ---
 
 <div align="center">
-<img src="docs/screenshots/graph.png" alt="Grafo de investigación" width="100%">
-<sub><i>Grafo de un caso de demostración. Todas las capturas usan una persona <b>ficticia</b> y dominios <code>.example</code>.</i></sub>
+<img src="docs/screenshots/en/graph.png" alt="Investigation graph" width="100%">
+<sub><i>Graph of a demo case. Every screenshot uses a <b>fictional</b> person and <code>.example</code> domains.</i></sub>
 </div>
 
-## ✨ Qué lo hace distinto
+## ✨ What makes it different
 
-${\color{#ff7a1a}\textsf{De\ un\ solo\ dato\ a\ un\ perfil\ completo,\ con\ pruebas\ de\ cada\ conexión.}}$
+${\color{#ff7a1a}\textsf{From\ a\ single\ clue\ to\ a\ full\ profile,\ with\ evidence\ for\ every\ link.}}$
 
 | | |
 |---|---|
-| 🕸️ **Grafo vivo** | Cada hallazgo es un nodo; las relaciones se dibujan solas. Agrupa en burbujas por tipo, plataforma o **familia de alias**. |
-| 🎯 **Puntuación de confianza** | Cada cuenta recibe una nota 0-100 según nombre, foto, ubicación y enlaces cruzados. Separa a la persona real de sus **homónimos**. |
-| 🧬 **Familias de alias** | Detecta que `nyxaluna`, `nyxa.lun4` y `xnyxax` son la misma raíz (leet, repeticiones, prefijos) y prueba variantes. |
-| 🔁 **Reintento inteligente** | Cuando Instagram, TikTok o un WAF bloquean, reintenta con pausas y te deja una lista para comprobar a mano. |
-| 🇨🇱 **Fuentes de Chile** | RUT, patentes, NIC Chile, InfoProbidad, empresas por RUT y tesis universitarias. |
-| 🗺️ **Mapa y línea de tiempo** | Geocodifica ubicaciones y ordena cronológicamente creaciones de cuentas, commits, filtraciones y archivos. |
-| 📄 **Informe** | Exporta el caso a HTML/PDF listo para entregar. |
-| 🤖 **IA opcional** | Resumen y análisis del caso con Ollama local o un proveedor compatible con OpenAI. |
-| 🔒 **Todo local** | Una sola `.exe`, base de datos SQLite a su lado, nada sale de tu equipo salvo las consultas a las fuentes. |
+| 🕸️ **Live graph** | Every finding is a node and relationships draw themselves. Group into bubbles by type, platform or **alias family**. |
+| 🎯 **Confidence scoring** | Every account gets a 0-100 score from name, photo, location and cross-links. Tells the real person apart from **namesakes**. |
+| 🧬 **Alias families** | Detects that `nyxaluna`, `nyxa.lun4` and `xnyxax` share a root (leet, repeated letters, prefixes) and tries the missing variants. |
+| 🔁 **Smart retries** | When Instagram, TikTok or a WAF rate-limits you, it retries with pauses and leaves a checklist to verify by hand. |
+| 🇨🇱 **Chilean sources** | RUT, license plates, NIC Chile, InfoProbidad, companies by RUT and university theses. |
+| 🗺️ **Map & timeline** | Geocodes locations and orders account creations, commits, breaches and archives chronologically. |
+| 📄 **Report** | Exports the case to HTML/PDF, ready to hand over. |
+| 🤖 **Optional AI** | Case summary and analysis with local Ollama or any OpenAI-compatible provider. |
+| 🔒 **Fully local** | A single `.exe` with a SQLite database next to it. Nothing leaves your machine except the queries to the sources. |
 
-## 📸 Capturas
+## 📸 Screenshots
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/confidence.png" alt="Confianza"><br><b>🎯 Confianza</b> · por qué una cuenta es (o no) la persona</td>
-    <td width="50%"><img src="docs/screenshots/alias.png" alt="Alias"><br><b>🧬 Familias de alias</b> · raíz común y variantes probadas</td>
+    <td width="50%"><img src="docs/screenshots/en/confidence.png" alt="Confidence"><br><b>🎯 Confidence</b> · why an account is (or isn't) the person</td>
+    <td width="50%"><img src="docs/screenshots/en/alias.png" alt="Alias families"><br><b>🧬 Alias families</b> · shared root and tested variants</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/bubbles.png" alt="Burbujas"><br><b>🫧 Burbujas</b> · el grafo agrupado por familia de alias</td>
-    <td><img src="docs/screenshots/map.png" alt="Mapa"><br><b>🗺️ Mapa</b> · ubicaciones geocodificadas</td>
+    <td><img src="docs/screenshots/en/bubbles.png" alt="Bubbles"><br><b>🫧 Bubbles</b> · the graph grouped by alias family</td>
+    <td><img src="docs/screenshots/en/map.png" alt="Map"><br><b>🗺️ Map</b> · geocoded locations</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/timeline.png" alt="Línea de tiempo"><br><b>🕒 Línea de tiempo</b> · la historia digital en orden</td>
-    <td><img src="docs/screenshots/list.png" alt="Lista"><br><b>📋 Lista</b> · todas las entidades con filtros</td>
+    <td><img src="docs/screenshots/en/timeline.png" alt="Timeline"><br><b>🕒 Timeline</b> · the digital history in order</td>
+    <td><img src="docs/screenshots/en/list.png" alt="List"><br><b>📋 List</b> · every entity, with filters</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/report.png" alt="Informe"><br><b>📄 Informe</b> · exportable a HTML/PDF</td>
-    <td><img src="docs/screenshots/english.png" alt="English UI"><br><b>🌐 English UI</b> · interfaz bilingüe ES / EN</td>
+    <td><img src="docs/screenshots/en/report.png" alt="Report"><br><b>📄 Report</b> · exportable to HTML/PDF</td>
+    <td><img src="docs/screenshots/en/spanish.png" alt="Spanish UI"><br><b>🌐 Bilingual</b> · one click switches the UI to Spanish</td>
   </tr>
 </table>
 
-## 🚀 Inicio rápido
+## 🚀 Quick start
 
-### Opción 1 · Ejecutable (Windows)
+### Option 1 · Executable (Windows)
 
-1. Descarga **`OsintHunter.exe`** desde [Releases](https://github.com/letox4/OsintHunter/releases/latest).
-2. Ponlo en cualquier carpeta y ábrelo. Se abre el navegador en `http://127.0.0.1:8787`.
-3. Crea un caso, escribe un usuario / email / teléfono / nombre y pulsa **Investigar**.
+1. Download **`OsintHunter.exe`** from [Releases](https://github.com/letox4/OsintHunter/releases/latest).
+2. Put it in any folder and run it. Your browser opens at `http://127.0.0.1:8787`.
+3. Click **English** in the top bar, create a case, type a username / email / phone / name and hit **Investigate**.
 
 > [!NOTE]
-> Los datos se guardan en una carpeta `data` junto al `.exe`. Windows SmartScreen puede avisar porque el ejecutable no está firmado: *Más información → Ejecutar de todas formas*.
+> Data is stored in a `data` folder next to the `.exe`. Windows SmartScreen may warn you because the executable isn't signed: *More info → Run anyway*.
 
-### Opción 2 · Desde el código
+### Option 2 · From source
 
 ```bash
 git clone https://github.com/letox4/OsintHunter.git
 cd OsintHunter
-start.bat            # crea el entorno, instala dependencias y arranca
+start.bat            # creates the venv, installs dependencies and starts
 ```
 
-En Linux / macOS:
+On Linux / macOS:
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
@@ -100,86 +101,72 @@ pip install -r requirements.txt
 python -m app
 ```
 
-### Generar tu propio .exe
+### Build your own .exe
 
 ```bash
-build_exe.bat        # deja el resultado en dist\OsintHunter.exe
+build_exe.bat        # output goes to dist\OsintHunter.exe
 ```
 
-## 🧩 Módulos
+## 🧩 Modules
 
 <details open>
-<summary><b>49 módulos</b> organizados por tipo de dato</summary>
+<summary><b>49 modules</b> organized by data type</summary>
 
 <br>
 
-| Entrada | Módulos |
+| Input | Modules |
 |---|---|
-| 👤 **Usuario** | Perfiles detallados (Instagram, TikTok, GitHub, Reddit…), barrido en **400+ sitios** (base de Sherlock), variantes y familias de alias, reintento de bloqueados, GitHub a fondo, perfiles archivados en Wayback, menciones en foros, lectura de la página del perfil |
-| 📧 **Email** | Validación MX, Gravatar, filtraciones (XposedOrNot, HIBP), cuentas registradas en apps, Hunter.io |
-| 📱 **Teléfono** | Operador, país y tipo de línea, Numverify |
-| 🧑 **Persona** | Búsqueda web (DuckDuckGo, Bing, Serper, Brave), dorks, Wikidata, publicaciones académicas |
-| 🌐 **Dominio / URL** | DNS, RDAP/WHOIS, subdominios (crt.sh), análisis del sitio, Wayback, VirusTotal, URLScan, URLhaus |
-| 🖥️ **IP** | Geolocalización, Shodan InternetDB, DNS inverso, Shodan, AbuseIPDB, GreyNoise |
-| 🇨🇱 **Chile** | RUT, patentes, NIC Chile, InfoProbidad / lobby, empresas por RUT, tesis |
-| 📎 **Otros** | Metadatos de documentos e imágenes (EXIF/GPS), hashes, MalwareBazaar, carteras cripto, invitaciones de Discord, Flickr geo |
+| 👤 **Username** | Detailed profiles (Instagram, TikTok, GitHub, Reddit…), sweep across **400+ sites** (Sherlock database), alias variants and families, blocked-check retries, deep GitHub, Wayback-archived profiles, forum mentions, profile-page reader |
+| 📧 **Email** | MX validation, Gravatar, breaches (XposedOrNot, HIBP), accounts registered on apps, Hunter.io |
+| 📱 **Phone** | Carrier, country and line type, Numverify |
+| 🧑 **Person** | Web search (DuckDuckGo, Bing, Serper, Brave), dorks, Wikidata, academic publications |
+| 🌐 **Domain / URL** | DNS, RDAP/WHOIS, subdomains (crt.sh), website analysis, Wayback, VirusTotal, URLScan, URLhaus |
+| 🖥️ **IP** | Geolocation, Shodan InternetDB, reverse DNS, Shodan, AbuseIPDB, GreyNoise |
+| 🇨🇱 **Chile** | RUT, license plates, NIC Chile, InfoProbidad / lobby, companies by RUT, theses |
+| 📎 **Other** | Document and image metadata (EXIF/GPS), hashes, MalwareBazaar, crypto wallets, Discord invites, Flickr geo |
 
 </details>
 
-## 🔑 Claves de API opcionales
+## 🔑 Optional API keys
 
-OsintHunter **funciona sin ninguna clave**. Si añades alguna en *Ajustes*, se activan más fuentes:
+OsintHunter **works without any key**. Add some in *Settings* to unlock more sources:
 
 <details>
-<summary>Ver las 13 integraciones</summary>
+<summary>See the 13 integrations</summary>
 
 <br>
 
-| Servicio | Para qué |
+| Service | What for |
 |---|---|
-| Serper.dev / Brave Search | Búsqueda web más fiable (Google) |
-| GitHub token | Sube el límite de 60 a 5000 peticiones/h |
-| Have I Been Pwned | Filtraciones de un email |
-| Hunter.io | Verificación de emails |
-| Numverify | Datos del teléfono |
-| Shodan · AbuseIPDB · GreyNoise | Reputación de IPs |
-| VirusTotal · URLScan · abuse.ch | Reputación de dominios y URLs |
-| Proveedor de IA | Análisis con IA (no hace falta con Ollama local) |
+| Serper.dev / Brave Search | More reliable web search (Google) |
+| GitHub token | Raises the limit from 60 to 5000 requests/h |
+| Have I Been Pwned | Breaches for an email |
+| Hunter.io | Email verification |
+| Numverify | Phone data |
+| Shodan · AbuseIPDB · GreyNoise | IP reputation |
+| VirusTotal · URLScan · abuse.ch | Domain and URL reputation |
+| AI provider | AI analysis (not needed with local Ollama) |
 
 </details>
 
-## 🔒 Privacidad
+## 🔒 Privacy
 
-- Todo se ejecuta en **tu equipo** (`127.0.0.1`); no hay servidores intermedios ni telemetría.
-- Los casos, ajustes y claves se guardan en `data/`, que está excluido del repositorio.
+- Everything runs on **your machine** (`127.0.0.1`): no middle servers, no telemetry.
+- Cases, settings and keys are stored in `data/`, which is excluded from the repository.
 
-## ⚖️ Uso responsable
+## ⚖️ Responsible use
 
 > [!WARNING]
-> OsintHunter consulta **solo fuentes públicas**. Está pensado para investigación legítima: ciberseguridad, periodismo, verificación de identidad, búsqueda de personas desaparecidas o auditar tu propia huella digital.
-> **No lo uses para acosar, acechar ni vulnerar la privacidad de nadie.** Respeta las leyes de protección de datos de tu país y los términos de cada servicio. El autor no se hace responsable del mal uso.
-
----
-
-## 🇬🇧 English
-
-**OsintHunter** is a local, desktop OSINT platform. Start from a username, email, phone, name, domain, IP or Chilean RUT and it builds an **investigation graph** with **confidence scoring**, alias-family detection, a map, a timeline and an exportable report. 49 modules, 400+ username sites, works with **zero API keys**, single Windows `.exe`, bilingual UI.
-
-```bash
-git clone https://github.com/letox4/OsintHunter.git && cd OsintHunter
-start.bat                       # Windows
-python -m app                   # Linux / macOS (after pip install -r requirements.txt)
-```
-
-Use it ethically and only for lawful purposes.
+> OsintHunter only queries **public sources**. It is meant for legitimate investigation: cybersecurity, journalism, identity verification, missing-person searches or auditing your own digital footprint.
+> **Do not use it to harass, stalk or violate anyone's privacy.** Follow the data-protection laws of your country and each service's terms. The author is not responsible for misuse.
 
 ---
 
 <div align="center">
 
-### ${\color{#ff7a1a}\textsf{Hecho\ por\ letox4}}$
+### ${\color{#ff7a1a}\textsf{Made\ by\ letox4}}$
 
-Si te sirve, deja una ⭐. Ayuda mucho.
+If it helps you, leave a ⭐. It really helps.
 
 <sub>MIT © 2026 letox4</sub>
 

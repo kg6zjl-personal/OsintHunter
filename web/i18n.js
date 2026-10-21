@@ -31,8 +31,15 @@ const I18N = (() => {
   }
 
   function fill(p, m, depth) {
-    let i = 1;
-    return p.en.replace(/\{\}/g, () => { const v = m[i++] ?? ""; return (v.trim() && trCore(v.trim(), depth + 1)) ?? v; });
+    let i = 1, partial = false;
+    const out = p.en.replace(/\{\}/g, () => {
+      const v = m[i++] ?? "";
+      const t = v.trim() && trCore(v.trim(), depth + 1);
+      if (t == null && SPANISH.test(v)) partial = true;
+      return t ?? v;
+    });
+    // un conector suelto («{} y {}») sólo se traduce si no deja trozos en español, que serían datos del usuario
+    return partial && p.lit <= 4 ? null : out;
   }
 
   function trCore(s, depth = 0) {
@@ -48,7 +55,8 @@ const I18N = (() => {
     }
     for (const p of patterns) {
       const m = s.match(p.re);
-      if (m) return fill(p, m, depth);
+      const out = m && fill(p, m, depth);
+      if (out != null) return out;
     }
     if (depth < 3) {
       for (const sep of [" · ", "\n", "; ", ", "]) {

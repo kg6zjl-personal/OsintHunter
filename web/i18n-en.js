@@ -665,6 +665,10 @@ const I18N_EN = {
     "Sin rastro en URLhaus ni ThreatFox": "No trace in URLhaus or ThreatFox",
     "{} maliciosos, {} sospechosos de {}": "{} malicious, {} suspicious out of {}",
     "{} con el nombre completo": "{} with the full name",
+    "{} parciales": "{} partial",
+    "Confirmada por ti como cuenta de la persona investigada": "Confirmed by you as the investigated person's account",
+    "Descartada por ti: no es la persona investigada": "Ruled out by you: not the investigated person",
+    "Marcar todas las filas visibles": "Select all visible rows",
     "{}: añade una clave gratuita de Serper o Brave en Ajustes, o usa los dorks": "{}: add a free Serper or Brave key in Settings, or use the dorks",
     "UTC{} aprox. (inactivo entre las {}h y {}h UTC, {} comentarios)": "UTC{} approx. (inactive between {}h and {}h UTC, {} comments)",
 
