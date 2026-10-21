@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OsintHunter</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0a0806">
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><img class="logo" src="favicon.svg" alt=""><span>OSINT</span><b>HUNTER</b></div>
+  <div class="case-bar">
+    <select id="caseSelect" title="Caso abierto"></select>
+    <button id="newCaseBtn" class="ghost">+ Nuevo caso</button>
+    <button id="renameCaseBtn" class="ghost icon" title="Renombrar caso">✎</button>
+    <button id="deleteCaseBtn" class="ghost icon danger" title="Eliminar caso">✕</button>
+  </div>
+  <div class="top-actions">
+    <button id="importBtn" class="ghost">Importar caso</button>
+    <input type="file" id="importFile" accept=".json" hidden>
+    <button id="langBtn" class="ghost" data-notr title="Idioma / Language"></button>
+    <button id="settingsBtn">Ajustes y claves API</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="left">
+    <form id="searchForm" class="card">
+      <div class="card-title">Nueva búsqueda</div>
+      <input id="searchInput" autocomplete="off" spellcheck="false"
+             placeholder="usuario, email, teléfono, nombre, RUT, patente, dominio, IP, URL…">
+      <div class="row">
+        <select id="typeSelect" title="Tipo de dato"></select>
+        <select id="depthSelect" title="Pivotado automático">
+          <option value="0">Sólo el objetivo</option>
+          <option value="1">+1 salto automático</option>
+          <option value="2">+2 saltos automáticos</option>
+        </select>
+      </div>
+      <button type="submit" class="primary">Investigar</button>
+      <label class="upload-btn">Analizar imagen (EXIF / GPS)
+        <input type="file" id="imageInput" accept="image/*" hidden>
+      </label>
+    </form>
+    <div class="card sources">
+      <div class="card-title">Fuentes consultadas <span id="jobStatus"></span></div>
+      <div id="sourcesList" class="sources-list"><div class="muted small">Aún no hay consultas.</div></div>
+    </div>
+  </aside>
+
+  <section class="center">
+    <div class="tabs">
+      <button data-tab="graph" class="tab active">Grafo</button>
+      <button data-tab="list" class="tab">Lista</button>
+      <button data-tab="map" class="tab">Mapa</button>
+      <button data-tab="timeline" class="tab">Cronología</button>
+      <button data-tab="notes" class="tab">Notas</button>
+      <div class="spacer"></div>
+      <label class="small muted check-inline" title="Oculta las cuentas cuya confianza es baja (posibles homónimos)">
+        <input type="checkbox" id="hideLowChk"> Ocultar confianza baja</label>
+      <button id="readBtn" class="ghost small hidden" title="Abre la página de cada cuenta de la que sólo se sabe que existe y saca nombre, foto y descripción para poder puntuarla">Leer perfiles</button>
+      <button id="aiBtn" class="ghost small" title="Compara las cuentas con IA para descartar homónimos">Verificar con IA</button>
+      <select id="cleanSel" class="small" title="Borrar varios nodos de una vez">
+        <option value="">Limpiar…</option>
+        <option value="low">Eliminar confianza baja</option>
+        <option value="discarded">Eliminar descartadas</option>
+        <option value="orphans">Eliminar nodos sueltos (sin conexiones)</option>
+        <option value="unreviewed">Eliminar cuentas sin revisar (deja confirmadas)</option>
+      </select>
+      <select id="groupSel" class="small" title="Ordenar un grafo grande: burbujas y nodos plegados">
+        <option value="">Agrupar…</option>
+        <option value="roots">Una burbuja por cada búsqueda</option>
+        <option value="platform">Burbujas de cuentas por usuario</option>
+        <option value="alias">Burbujas por familia de alias</option>
+        <option value="collapseBig">Plegar nodos con muchos resultados</option>
+        <option value="collapseGroups">Plegar todas las burbujas</option>
+        <option value="expand">Desplegar todo</option>
+        <option value="ungroup">Quitar todas las burbujas</option>
+      </select>
+      <button id="fitBtn" class="ghost small">Encuadrar</button>
+      <button id="layoutBtn" class="ghost small">Reordenar</button>
+      <button id="reportBtn" class="small" title="Informe del caso para imprimir o guardar como PDF">Informe</button>
+      <button id="pngBtn" class="ghost small">PNG</button>
+      <button id="exportBtn" class="ghost small">Exportar JSON</button>
+    </div>
+    <div id="graphView" class="view">
+      <div id="cy"></div>
+      <div id="selBar" class="selbar hidden">
+        <span id="selCount"></span>
+        <button id="selGroup" class="small" title="Mete los nodos seleccionados en una burbuja con nombre">Agrupar en burbuja</button>
+        <button id="selDelete" class="small danger-solid">Eliminar</button>
+        <button id="selClear" class="ghost small">Quitar selección</button>
+      </div>
+      <div id="selHint" class="selhint muted small">Ctrl+clic suma nodos · Shift+arrastrar selecciona un área · Supr borra la selección · doble clic en una burbuja la pliega</div>
+      <div id="legend" class="legend"></div>
+      <div id="emptyState" class="empty">
+        <img class="empty-logo" src="favicon.svg" alt="">
+        <h2>Empieza la cacería</h2>
+        <p>Escribe un usuario, email, teléfono, nombre completo, RUT, patente, dominio, IP, URL, hash o cartera de criptomonedas.
+          El tipo se detecta solo.</p>
+        <p class="muted">Haz clic en un nodo para ver sus datos, doble clic para investigarlo, y pasa el ratón por encima para ver sus conexiones.</p>
+      </div>
+    </div>
+    <div id="listView" class="view hidden">
+      <div class="list-tools"><input id="listFilter" placeholder="Filtrar entidades… (ej. «steam», «cuenta», «sherlock»)">
+        <button id="listDelete" class="small danger-solid" disabled>Eliminar marcadas</button></div>
+      <div class="table-wrap"><table id="entityTable"></table></div>
+    </div>
+    <div id="mapView" class="view hidden">
+      <div id="map"></div>
+      <div id="mapEmpty" class="empty"><p class="muted">Aún no hay ubicaciones con coordenadas en este caso.</p></div>
+    </div>
+    <div id="timelineView" class="view hidden">
+      <div id="timeline" class="timeline"></div>
+    </div>
+    <div id="notesView" class="view hidden">
+      <textarea id="notesArea" placeholder="Notas del caso (se guardan solas)…"></textarea>
+    </div>
+  </section>
+
+  <aside class="right" id="details">
+    <div class="placeholder muted">Selecciona un nodo para ver sus datos.</div>
+  </aside>
+</main>
+
+<dialog id="settingsDlg">
+  <form method="dialog" id="settingsForm">
+    <h2>Ajustes</h2>
+    <div class="settings-grid">
+      <label>País por defecto para teléfonos (código ISO, ej. AR, ES, MX)
+        <input name="default_region" maxlength="2" style="text-transform:uppercase">
+      </label>
+      <label>Tiempo máximo por web en el barrido de usuario (s)
+        <input name="username_timeout" type="number" min="5" max="60">
+      </label>
+      <label>Máximo de entidades en el pivotado automático
+        <input name="max_pivot_entities" type="number" min="1" max="200">
+      </label>
+      <label class="check"><input type="checkbox" name="sherlock_db"> Usar la base ampliada de Sherlock (400+ sitios)</label>
+      <label class="check"><input type="checkbox" name="include_nsfw"> Incluir sitios para adultos en el barrido</label>
+    </div>
+    <h3>Inteligencia artificial</h3>
+    <p class="muted small">Opcional, para «Verificar con IA». Funciona con cualquier proveedor compatible con OpenAI.
+      Ollama corre en tu PC sin clave; Groq y Gemini tienen capa gratuita (pon su clave en «Clave del proveedor de IA», abajo).</p>
+    <div class="settings-grid">
+      <label>Proveedor
+        <select id="aiPreset">
+          <option value="">Personalizado</option>
+          <option value="http://localhost:11434/v1|llama3.1">Ollama (local, gratis)</option>
+          <option value="https://api.groq.com/openai/v1|llama-3.3-70b-versatile">Groq (gratis con clave)</option>
+          <option value="https://generativelanguage.googleapis.com/v1beta/openai|gemini-2.0-flash">Google Gemini (gratis con clave)</option>
+          <option value="https://openrouter.ai/api/v1|meta-llama/llama-3.3-70b-instruct:free">OpenRouter</option>
+          <option value="https://api.openai.com/v1|gpt-4o-mini">OpenAI</option>
+        </select>
+      </label>
+      <div class="row">
+        <label>URL base <input name="ai_base_url" placeholder="http://localhost:11434/v1"></label>
+        <label>Modelo <input name="ai_model" placeholder="llama3.1"></label>
+      </div>
+    </div>
+    <h3>Claves API</h3>
+    <p class="muted small">Todas opcionales. Se guardan sólo en tu PC (carpeta <code>data</code>). Sin clave, esa fuente se omite y se indica en «Fuentes consultadas».</p>
+    <div id="keysList" class="keys-list"></div>
+    <div class="dlg-actions">
+      <button value="cancel" class="ghost">Cancelar</button>
+      <button id="saveSettingsBtn" value="save" class="primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="pivotDlg">
+  <form method="dialog">
+    <h2 id="pivotTitle">Investigar</h2>
+    <div id="pivotModules" class="pivot-modules"></div>
+    <label>Pivotado automático
+      <select id="pivotDepth">
+        <option value="0">Sólo esta entidad</option>
+        <option value="1">+1 salto automático</option>
+        <option value="2">+2 saltos automáticos</option>
+      </select>
+    </label>
+    <div class="dlg-actions">
+      <button value="cancel" class="ghost">Cancelar</button>
+      <button id="pivotRunBtn" value="run" class="primary">Investigar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast"></div>
+
+<script src="vendor/cytoscape.min.js"></script>
+<script src="vendor/layout-base.js"></script>
+<script src="vendor/cose-base.js"></script>
+<script src="vendor/cytoscape-fcose.js"></script>
+<script src="vendor/leaflet.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-en.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

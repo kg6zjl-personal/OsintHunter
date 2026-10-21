@@ -1,0 +1,9 @@
+fastapi>=0.115
+uvicorn>=0.30
+httpx>=0.27
+dnspython>=2.6
+phonenumbers>=8.13
+pillow>=10.4
+python-multipart>=0.0.9
+pypdf>=5.0
+olefile>=0.47

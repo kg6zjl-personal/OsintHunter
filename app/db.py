@@ -1,0 +1,261 @@
+import json
+import sqlite3
+import threading
+import time
+
+from .config import DATA_DIR
+from .models import display_label, entity_id, normalize
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS cases(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    notes TEXT DEFAULT '',
+    created REAL,
+    updated REAL
+);
+CREATE TABLE IF NOT EXISTS entities(
+    case_id INTEGER,
+    id TEXT,
+    type TEXT,
+    value TEXT,
+    attrs TEXT,
+    root INTEGER DEFAULT 0,
+    pivot INTEGER DEFAULT 1,
+    created REAL,
+    PRIMARY KEY(case_id, id)
+);
+CREATE TABLE IF NOT EXISTS edges(
+    case_id INTEGER,
+    src TEXT,
+    dst TEXT,
+    label TEXT,
+    source TEXT,
+    PRIMARY KEY(case_id, src, dst, label)
+);
+CREATE TABLE IF NOT EXISTS runs(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id INTEGER,
+    entity_id TEXT,
+    module TEXT,
+    status TEXT,
+    message TEXT,
+    found INTEGER,
+    started REAL,
+    finished REAL
+);
+CREATE INDEX IF NOT EXISTS runs_case ON runs(case_id, entity_id);
+"""
+
+
+def merge_attrs(old: dict, new: dict) -> dict:
+    out = dict(old)
+    for k, v in (new or {}).items():
+        if v is None or v == "" or v == [] or v == {}:
+            continue
+        cur = out.get(k)
+        if isinstance(v, list) and isinstance(cur, list):
+            seen = {json.dumps(x, sort_keys=True, default=str) for x in cur}
+            merged = list(cur)
+            for x in v:
+                s = json.dumps(x, sort_keys=True, default=str)
+                if s not in seen:
+                    seen.add(s)
+                    merged.append(x)
+            out[k] = merged
+        elif isinstance(v, dict) and isinstance(cur, dict):
+            out[k] = {**cur, **v}
+        else:
+            out[k] = v
+    return out
+
+
+class DB:
+    def __init__(self, path=DATA_DIR / "osint.db"):
+        self.conn = sqlite3.connect(path, check_same_thread=False)
+        self.conn.row_factory = sqlite3.Row
+        self.lock = threading.RLock()
+        with self.lock:
+            self.conn.execute("PRAGMA journal_mode=WAL")
+            self.conn.executescript(SCHEMA)
+            cols = {r[1] for r in self.conn.execute("PRAGMA table_info(cases)")}
+            if "layout" not in cols:
+                self.conn.execute("ALTER TABLE cases ADD COLUMN layout TEXT DEFAULT '{}'")
+            self.conn.commit()
+
+    # ---------- casos ----------
+    def list_cases(self) -> list[dict]:
+        with self.lock:
+            rows = self.conn.execute(
+                "SELECT c.*, (SELECT COUNT(*) FROM entities e WHERE e.case_id = c.id) AS entities "
+                "FROM cases c ORDER BY updated DESC"
+            ).fetchall()
+        return [{k: v for k, v in dict(r).items() if k != "layout"} for r in rows]
+
+    def create_case(self, name: str) -> dict:
+        now = time.time()
+        with self.lock:
+            cur = self.conn.execute(
+                "INSERT INTO cases(name, created, updated) VALUES(?,?,?)", (name.strip() or "Caso sin nombre", now, now)
+            )
+            self.conn.commit()
+        return self.get_case(cur.lastrowid)
+
+    def get_case(self, case_id: int) -> dict | None:
+        with self.lock:
+            row = self.conn.execute("SELECT * FROM cases WHERE id=?", (case_id,)).fetchone()
+        if not row:
+            return None
+        case = dict(row)
+        try:
+            case["layout"] = json.loads(case.get("layout") or "{}")
+        except ValueError:
+            case["layout"] = {}
+        return case
+
+    def update_case(self, case_id: int, name: str | None = None, notes: str | None = None,
+                    layout: dict | None = None) -> dict | None:
+        with self.lock:
+            if layout is not None:
+                self.conn.execute("UPDATE cases SET layout=? WHERE id=?", (json.dumps(layout, ensure_ascii=False), case_id))
+            if name is not None:
+                self.conn.execute("UPDATE cases SET name=? WHERE id=?", (name.strip() or "Caso sin nombre", case_id))
+            if notes is not None:
+                self.conn.execute("UPDATE cases SET notes=? WHERE id=?", (notes, case_id))
+            self.touch(case_id)
+        return self.get_case(case_id)
+
+    def touch(self, case_id: int) -> None:
+        with self.lock:
+            self.conn.execute("UPDATE cases SET updated=? WHERE id=?", (time.time(), case_id))
+            self.conn.commit()
+
+    def delete_case(self, case_id: int) -> None:
+        with self.lock:
+            for table in ("entities", "edges", "runs"):
+                self.conn.execute(f"DELETE FROM {table} WHERE case_id=?", (case_id,))
+            self.conn.execute("DELETE FROM cases WHERE id=?", (case_id,))
+            self.conn.commit()
+
+    # ---------- entidades ----------
+    @staticmethod
+    def _entity(row) -> dict:
+        attrs = json.loads(row["attrs"] or "{}")
+        return {
+            "id": row["id"],
+            "type": row["type"],
+            "value": row["value"],
+            "attrs": attrs,
+            "root": bool(row["root"]),
+            "pivot": bool(row["pivot"]),
+            "label": display_label(row["type"], row["value"], attrs),
+        }
+
+    def get_entity(self, case_id: int, eid: str) -> dict | None:
+        with self.lock:
+            row = self.conn.execute("SELECT * FROM entities WHERE case_id=? AND id=?", (case_id, eid)).fetchone()
+        return self._entity(row) if row else None
+
+    def upsert_entity(
+        self, case_id: int, etype: str, value: str, attrs: dict | None = None, root: bool = False, pivot: bool = True
+    ) -> tuple[dict, bool]:
+        value = normalize(etype, value)
+        eid = entity_id(etype, value)
+        with self.lock:
+            row = self.conn.execute("SELECT * FROM entities WHERE case_id=? AND id=?", (case_id, eid)).fetchone()
+            if row:
+                merged = merge_attrs(json.loads(row["attrs"] or "{}"), attrs or {})
+                self.conn.execute(
+                    "UPDATE entities SET attrs=?, root=MAX(root, ?), pivot=MAX(pivot, ?) WHERE case_id=? AND id=?",
+                    (json.dumps(merged, ensure_ascii=False), int(root), int(pivot), case_id, eid),
+                )
+                created = False
+            else:
+                self.conn.execute(
+                    "INSERT INTO entities(case_id, id, type, value, attrs, root, pivot, created) VALUES(?,?,?,?,?,?,?,?)",
+                    (case_id, eid, etype, value, json.dumps(attrs or {}, ensure_ascii=False), int(root), int(pivot), time.time()),
+                )
+                created = True
+            self.conn.commit()
+        return self.get_entity(case_id, eid), created
+
+    def update_attrs(self, case_id: int, eid: str, attrs: dict, replace: bool = False) -> dict | None:
+        """Fusiona atributos; con replace=True las claves dadas se sobrescriben (o se borran si valen None)."""
+        with self.lock:
+            row = self.conn.execute("SELECT attrs FROM entities WHERE case_id=? AND id=?", (case_id, eid)).fetchone()
+            if not row:
+                return None
+            current = json.loads(row["attrs"] or "{}")
+            if replace:
+                merged = dict(current)
+                for k, v in attrs.items():
+                    if v is None:
+                        merged.pop(k, None)
+                    else:
+                        merged[k] = v
+            else:
+                merged = merge_attrs(current, attrs)
+            self.conn.execute(
+                "UPDATE entities SET attrs=? WHERE case_id=? AND id=?", (json.dumps(merged, ensure_ascii=False), case_id, eid)
+            )
+            self.conn.commit()
+        return self.get_entity(case_id, eid)
+
+    def delete_entity(self, case_id: int, eid: str) -> None:
+        with self.lock:
+            self.conn.execute("DELETE FROM entities WHERE case_id=? AND id=?", (case_id, eid))
+            self.conn.execute("DELETE FROM edges WHERE case_id=? AND (src=? OR dst=?)", (case_id, eid, eid))
+            self.conn.execute("DELETE FROM runs WHERE case_id=? AND entity_id=?", (case_id, eid))
+            self.conn.commit()
+
+    def delete_entities(self, case_id: int, ids: list[str]) -> int:
+        n = 0
+        with self.lock:
+            for eid in ids:
+                n += self.conn.execute("DELETE FROM entities WHERE case_id=? AND id=?", (case_id, eid)).rowcount
+                self.conn.execute("DELETE FROM edges WHERE case_id=? AND (src=? OR dst=?)", (case_id, eid, eid))
+                self.conn.execute("DELETE FROM runs WHERE case_id=? AND entity_id=?", (case_id, eid))
+            self.conn.commit()
+        return n
+
+    # ---------- relaciones y ejecuciones ----------
+    def add_edge(self, case_id: int, src: str, dst: str, label: str, source: str) -> bool:
+        with self.lock:
+            cur = self.conn.execute(
+                "INSERT OR IGNORE INTO edges(case_id, src, dst, label, source) VALUES(?,?,?,?,?)",
+                (case_id, src, dst, label, source),
+            )
+            self.conn.commit()
+        return cur.rowcount > 0
+
+    def delete_edge(self, case_id: int, src: str, dst: str, label: str) -> bool:
+        with self.lock:
+            cur = self.conn.execute("DELETE FROM edges WHERE case_id=? AND src=? AND dst=? AND label=?",
+                                    (case_id, src, dst, label))
+            self.conn.commit()
+        return cur.rowcount > 0
+
+    def add_run(self, case_id: int, eid: str, module: str, status: str, message: str, found: int, started: float) -> dict:
+        now = time.time()
+        with self.lock:
+            cur = self.conn.execute(
+                "INSERT INTO runs(case_id, entity_id, module, status, message, found, started, finished) VALUES(?,?,?,?,?,?,?,?)",
+                (case_id, eid, module, status, message, found, started, now),
+            )
+            self.conn.commit()
+            row = self.conn.execute("SELECT * FROM runs WHERE id=?", (cur.lastrowid,)).fetchone()
+        return dict(row)
+
+    def graph(self, case_id: int) -> dict:
+        with self.lock:
+            ents = self.conn.execute("SELECT * FROM entities WHERE case_id=? ORDER BY created", (case_id,)).fetchall()
+            edges = self.conn.execute("SELECT src, dst, label, source FROM edges WHERE case_id=?", (case_id,)).fetchall()
+            runs = self.conn.execute("SELECT * FROM runs WHERE case_id=? ORDER BY id", (case_id,)).fetchall()
+        return {
+            "entities": [self._entity(r) for r in ents],
+            "edges": [dict(r) for r in edges],
+            "runs": [dict(r) for r in runs],
+        }
+
+
+db = DB()
