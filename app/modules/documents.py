@@ -9,10 +9,17 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from urllib.parse import unquote, urlparse
 
+def __find_ruts(text, limit=20):
+    from ..config import settings
+    if not settings.chile_enabled():
+        return []
+    from .chile import find_ruts
+    return _find_ruts(text, limit=limit)
+
+
 import httpx
 
 from ..util import EMAIL_RE
-from .chile import find_ruts
 from .base import Module, register
 
 DOC_MIME = r"application/(pdf|msword|vnd\.ms-excel|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\..*)"
@@ -283,7 +290,7 @@ class DocMetadata(Module):
                     tools[meta[k]] += 1
             if meta.get("company"):
                 companies[meta["company"]] += 1
-            for rut, context in find_ruts(meta.get("text") or "", limit=60):
+            for rut, context in _find_ruts(meta.get("text") or "", limit=60):
                 entry = ruts.setdefault(rut, {"files": [], "context": []})
                 if name not in entry["files"]:
                     entry["files"].append(name)

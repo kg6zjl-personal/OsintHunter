@@ -3,7 +3,17 @@
 // Traducción de la interfaz. El código y los módulos escriben en español; en inglés se traduce lo que se muestra
 // (texto del DOM, atributos, diálogos, etiquetas del grafo e informe) con el diccionario de i18n-en.js.
 const I18N = (() => {
-  const lang = localStorage.getItem("osint-lang") === "en" ? "en" : "es";
+  // Priority: ?lang= → localStorage → server default (config.js) → en (fork default)
+  const q = new URLSearchParams(location.search).get("lang");
+  const stored = localStorage.getItem("osint-lang");
+  const boot = (typeof window !== "undefined" && window.OSINT_DEFAULT_LANG) || "";
+  let lang = "en";
+  if (q === "en" || q === "es") lang = q;
+  else if (stored === "en" || stored === "es") lang = stored;
+  else if (boot === "en" || boot === "es") lang = boot;
+  if (!stored && (boot === "en" || boot === "es")) {
+    try { localStorage.setItem("osint-lang", boot); } catch (_) {}
+  }
   const locale = lang === "en" ? "en-US" : "es-CL";
   const exact = new Map(), keys = new Map(), patterns = [];
   const missing = new Set();
@@ -118,6 +128,7 @@ const I18N = (() => {
   }
 
   function start() {
+    if (typeof I18N_EN !== "undefined") load(I18N_EN);
     if (lang === "es") return;
     document.documentElement.lang = "en";
     document.title = tr(document.title);

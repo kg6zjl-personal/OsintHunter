@@ -863,6 +863,9 @@ const I18N_EN = {
     "Cuenta Microsoft / Office 365": "Microsoft / Office 365 account",
   },
 
+    'usuario, email, teléfono, nombre, dominio, IP, URL…': 'username, email, phone, name, domain, IP, URL…',
+    'Incluir módulos de Chile (RUT, patente, NIC Chile…)': 'Include Chile modules (RUT, plate, NIC Chile…)',
+    'No writable data directory': 'No writable data directory',
   keys: {
     "Foto coincide con": "Photo matches",
     "Nivel de confianza": "Confidence level",

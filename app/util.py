@@ -72,12 +72,15 @@ def parse_page(html: str, base_url: str) -> dict:
         if s and (s[0], s[1].lower()) not in {(p, u.lower()) for p, u, _ in socials}:
             socials.append((s[0], s[1], l))
     base_host = urlparse(base_url).hostname or ""
-    from .modules.chile import find_ruts
-
     text = htmllib.unescape(re.sub(r"<script.*?</script>|<style.*?</style>", " ", html, flags=re.S | re.I))
     text = re.sub(r"<[^>]+>", " ", text)
+    from .config import settings
+    ruts = []
+    if settings.chile_enabled():
+        from .modules.chile import find_ruts
+        ruts = find_ruts(text, limit=20)
     return {
-        "ruts": find_ruts(text, limit=20),
+        "ruts": ruts,
         "title": htmllib.unescape(" ".join(title.group(1).split()))[:200] if title else None,
         "description": _meta(html, "description") or _meta(html, "og:description"),
         "generator": _meta(html, "generator"),
