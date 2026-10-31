@@ -1,5 +1,18 @@
 <div align="center">
 
+
+## kg6zjl-personal fork
+
+Environment variables (optional; override settings UI / `settings.json`):
+
+| Variable | Values | Default (this fork) |
+|---|---|---|
+| `OSINT_LANG` | `en` \| `es` | `en` |
+| `OSINT_ENABLE_CHILE` | `true`/`false` | `false` — skips Chile modules (RUT, plate, NIC Chile, InfoProbidad, …) |
+
+When set, env wins over the settings file (`lang_locked` / `chile_locked` in `/api/settings`).
+UI language toggle is wired through `i18n.js` + `/config.js` bootstrap.
+
 <img src="docs/banner.svg" alt="OsintHunter" width="100%">
 
 **🇬🇧 English** · [🇪🇸 Español](README.es.md)

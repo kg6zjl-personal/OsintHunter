@@ -63,7 +63,7 @@ let cy = null;
 let toastTimer;
 function toast(msg, isErr = false) {
   const t = $("#toast");
-  t.textContent = msg;
+  t.textContent = (typeof I18N !== "undefined" && I18N.tr) ? I18N.tr(msg) : msg;
   t.className = "toast show" + (isErr ? " err" : "");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => (t.className = "toast"), 3500);
@@ -1783,6 +1783,7 @@ $("#saveSettingsBtn").addEventListener("click", async (ev) => {
       username_timeout: Number(f.username_timeout.value) || 15,
       max_pivot_entities: Number(f.max_pivot_entities.value) || 25,
       sherlock_db: f.sherlock_db.checked,
+      enable_chile: f.enable_chile ? f.enable_chile.checked : false,
       include_nsfw: f.include_nsfw.checked,
       ai_base_url: f.ai_base_url.value.trim(),
       ai_model: f.ai_model.value.trim(),

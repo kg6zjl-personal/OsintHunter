@@ -31,7 +31,7 @@
     <form id="searchForm" class="card">
       <div class="card-title">Nueva búsqueda</div>
       <input id="searchInput" autocomplete="off" spellcheck="false"
-             placeholder="usuario, email, teléfono, nombre, RUT, patente, dominio, IP, URL…">
+             placeholder="usuario, email, teléfono, nombre, dominio, IP, URL…" >
       <div class="row">
         <select id="typeSelect" title="Tipo de dato"></select>
         <select id="depthSelect" title="Pivotado automático">
@@ -136,6 +136,7 @@
       <label>Tiempo máximo por web en el barrido de usuario (s)
         <input name="username_timeout" type="number" min="5" max="60">
       </label>
+      <label class="check"><input type="checkbox" name="enable_chile"> Incluir módulos de Chile (RUT, patente, NIC Chile…)</label>
       <label>Máximo de entidades en el pivotado automático
         <input name="max_pivot_entities" type="number" min="1" max="200">
       </label>
@@ -196,6 +197,7 @@
 <script src="vendor/cose-base.js"></script>
 <script src="vendor/cytoscape-fcose.js"></script>
 <script src="vendor/leaflet.js"></script>
+<script src="/config.js"></script>
 <script src="i18n.js"></script>
 <script src="i18n-en.js"></script>
 <script src="app.js"></script>

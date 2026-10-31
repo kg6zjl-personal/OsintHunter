@@ -2,7 +2,14 @@
 import html
 import re
 
-from .base import Module, register
+from .base import Module, register as _register
+from ..config import settings
+
+def register(cls):
+    if settings.chile_enabled():
+        return _register(cls)
+    return cls
+
 
 # ---------------------------------------------------------------- RUT
 

@@ -12,7 +12,7 @@ from .config import WEB_DIR, settings
 from .db import db
 from .engine import engine
 from .exif import analyze_image
-from .models import ENTITY_TYPES, detect_type
+from .models import ENTITY_TYPES, detect_type, entity_types_public
 from .modules import REGISTRY
 from .modules.username import PROFILE_URLS as MANUAL_PROFILE_URLS
 
@@ -96,7 +96,8 @@ def _case(case_id: int) -> dict:
 @app.get("/api/meta")
 def meta():
     return {
-        "entity_types": ENTITY_TYPES,
+        "entity_types": entity_types_public(),
+        "enable_chile": settings.chile_enabled(),
         "modules": [
             {**m.meta(), "ready": all(settings.key(k) for k in m.keys)}
             for m in REGISTRY.values()
@@ -362,5 +363,16 @@ async def revalidate_static(request, call_next):
         response.headers.setdefault("Cache-Control", "no-cache")
     return response
 
+
+
+@app.get("/config.js")
+def config_js():
+    """Boot defaults for the UI before i18n runs (lang + chile flag)."""
+    import json as _json
+    body = (
+        f"window.OSINT_DEFAULT_LANG={_json.dumps(settings.get('lang') or 'en')};\n"
+        f"window.OSINT_ENABLE_CHILE={_json.dumps(bool(settings.chile_enabled()))};\n"
+    )
+    return Response(body, media_type="application/javascript")
 
 app.mount("/", StaticFiles(directory=WEB_DIR), name="web")

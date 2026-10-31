@@ -1,6 +1,8 @@
 import ipaddress
 import re
 
+from .config import settings
+
 # tipo -> (nombre visible, color, forma en el grafo, ¿se puede investigar directamente?)
 ENTITY_TYPES: dict[str, dict] = {
     "username": {"label": "Usuario", "color": "#4fc3f7", "shape": "ellipse", "input": True},
@@ -65,13 +67,14 @@ def detect_type(value: str) -> str:
         return "crypto"
     if _HEX.match(v) and len(v) in (32, 40, 56, 64, 96, 128):
         return "hash"
-    from .modules.chile import plate_kind
+    if settings.chile_enabled():
+        from .modules.chile import plate_kind
 
-    if _RUT.match(v):
-        return "rut"
-    # sin separadores sólo en mayúsculas, para no confundir con usuarios tipo «abcd12»
-    if plate_kind(v) and (_PLATE_SEP.match(v) or (v.isupper() and re.fullmatch(r"[A-Z]{4}\d{2}|[A-Z]{2}\d{4}", v))):
-        return "plate"
+        if _RUT.match(v):
+            return "rut"
+        # sin separadores sólo en mayúsculas, para no confundir con usuarios tipo «abcd12»
+        if plate_kind(v) and (_PLATE_SEP.match(v) or (v.isupper() and re.fullmatch(r"[A-Z]{4}\d{2}|[A-Z]{2}\d{4}", v))):
+            return "plate"
     digits = re.sub(r"\D", "", v)
     if _PHONE.match(v) and 7 <= len(digits) <= 15 and (v.startswith("+") or not re.search(r"[a-z]", v, re.I)):
         return "phone"
@@ -101,12 +104,12 @@ def normalize(etype: str, value: str) -> str:
         v = " ".join(v.split()).title()
     elif etype == "account":
         v = v.rstrip("/")
-    elif etype == "rut":
+    elif etype == "rut" and settings.chile_enabled():
         from .modules.chile import rut_fmt, rut_parts
 
         p = rut_parts(v)
         v = rut_fmt(*p) if p else v.upper()
-    elif etype == "plate":
+    elif etype == "plate" and settings.chile_enabled():
         from .modules.chile import plate_clean
 
         v = plate_clean(v)
@@ -128,8 +131,16 @@ def display_label(etype: str, value: str, attrs: dict) -> str:
         return f"{value} {attrs['Organización']}"
     if etype == "image" and attrs.get("Archivo"):
         return attrs["Archivo"]
-    if etype == "plate":
+    if etype == "plate" and settings.chile_enabled():
         from .modules.chile import plate_display
 
         return plate_display(value)
     return value
+
+
+def entity_types_public() -> dict:
+    """Entity type catalog for the UI; hide Chile-only inputs when disabled."""
+    if settings.chile_enabled():
+        return ENTITY_TYPES
+    skip = {"rut", "plate"}
+    return {k: v for k, v in ENTITY_TYPES.items() if k not in skip}

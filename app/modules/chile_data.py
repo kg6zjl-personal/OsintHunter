@@ -12,7 +12,14 @@ from collections import defaultdict
 import httpx
 
 from ..config import DATA_DIR
-from .base import Module, Skip, register
+from .base import Module, Skip, register as _register
+from ..config import settings
+
+def register(cls):
+    if settings.chile_enabled():
+        return _register(cls)
+    return cls
+
 from .chile import rut_fmt, rut_parts
 from .people import name_match, name_variants, same_name, tokens
 
